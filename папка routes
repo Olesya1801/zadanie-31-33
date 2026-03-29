@@ -1,0 +1,30 @@
+auth.js - описаны маршруты, связанные с аутентификацией пользователя. 
+import { validate, registerSchema, loginSchema } from "../validators/auth.js";
+import { register, login, refresh, logout } from "../controllers/authController.js";
+import authenicate from "../middleware/authenticate.js";
+import { Router } from "express";
+
+const router = Router();
+
+router.post("/register", validate(reqisterSchema), register);
+router.post("/login", validate(loginSchema), login);
+router.post("/refresh", refresh);
+router.post("/logout", authenicate, logout);
+
+export default router;
+
+users.js - описаны маршруты для работы с пользователями, и здесь применяется более строгая схема доступа.
+import { Router } from "express";
+import { getAllUsers, getUserById } from "../controllers/userController.js";
+import authenicate from "../middleware/authenticate.js";
+import authorize from "../middleware/authorize.js";
+
+const router = Router();
+
+router.use(authenticate, authorize("admin"));
+
+router.get("/", getAllUsers);
+router.get("/:id", getUserById);
+
+export default router;
+
